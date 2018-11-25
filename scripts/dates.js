@@ -4,6 +4,8 @@ const converter = (ts) => {
     let month = date.getMonth() + 1; //Tick up 1 since January is 0
     const year = date.getFullYear();
     
+    //Add "0" if less than 10 to force a two-digit string
+    
     if (day < 10) {
         day = "0" + day;
     } 
@@ -15,13 +17,13 @@ const converter = (ts) => {
     return year + "-" + month + "-" + day;
 }
 
-let current_time = Math.floor(Date.now());
+let today = Math.floor(Date.now());
 let annyong = 86400000;
 let days_ago = 30;
-let end_date = current_time - annyong;
-let start_date = current_time - (annyong * days_ago);
+let end_date = today - annyong;
+let start_date = today - (annyong * days_ago);
 
-today = converter(current_time);
+today = converter(today);
 start_date = converter(start_date);
 end_date = converter(end_date);
 
