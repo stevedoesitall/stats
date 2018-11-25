@@ -67,7 +67,7 @@ function(err, response) {
                         else {
                             response.rev = response.rev / 100;
                         }
-                        
+
                         active_templates.push(response);
                     }
                 });
@@ -77,7 +77,7 @@ function(err, response) {
 });
 
 setTimeout(() => {
-    const Json2csvParser = require('json2csv').Parser;
+    const Json2csvParser = require("json2csv").Parser;
     const fields = ["template", "count", "confirmed_opens", "open_rate", "click", "cto_rate", "pv", "rev"];
     const file_name = require(date_path).today + " send stats.csv";
 
