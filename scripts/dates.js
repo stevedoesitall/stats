@@ -5,7 +5,7 @@ const converter = (ts) => {
     const year = date.getFullYear();
     
     //Add "0" if less than 10 to force a two-digit string
-    
+
     if (day < 10) {
         day = "0" + day;
     } 
@@ -15,7 +15,7 @@ const converter = (ts) => {
     } 
 
     return year + "-" + month + "-" + day;
-}
+};
 
 let today = Math.floor(Date.now());
 let annyong = 86400000;
@@ -23,12 +23,8 @@ let days_ago = 30;
 let end_date = today - annyong;
 let start_date = today - (annyong * days_ago);
 
-today = converter(today);
-start_date = converter(start_date);
-end_date = converter(end_date);
-
 module.exports = {
-    today,
-    start_date,
-    end_date
-}
+    today: converter(today),
+    start_date: converter(start_date),
+    end_date: converter(end_date)
+};

@@ -40,6 +40,24 @@ function(err, response) {
                     else {
                         response.template = template.name;
 
+                        if (!response.hardbounce) {
+                            response.hardbounce = 0;
+                            response.hardbounce_rate = 0;
+                        }
+                        else {
+                            response.hardbounce_rate = ((response.count / response.hardbounce) * 100).toFixed(2);
+                        }
+    
+                        if (!response.softbounce) {
+                            response.softbounce = 0;
+                            response.softbounce_rate = 0;
+                        }
+                        else {
+                            response.softbounce_rate = ((response.count / response.softbounce) * 100).toFixed(2);
+                        }
+    
+                        response.delivered = response.count - (response.hardbounce + response.softbounce);
+
                         if (!response.confirmed_opens) {
                             response.confirmed_opens = 0;
                             response.open_rate = 0
@@ -60,12 +78,36 @@ function(err, response) {
                             response.pv = 0;
                         }
 
+                        if (!response.purchase) {
+                            response.purchase = 0;
+                            response.purchase_rate = 0;
+                        }
+                        else {
+                            response.purchase_rate = ((response.purchase / response.delivered) * 100).toFixed(2);
+                        }
+
                         if (!response.rev) {
                             response.rev = 0;
                         }
 
                         else {
                             response.rev = response.rev / 100;
+                        }
+
+                        if (!response.optout) {
+                            response.optout = 0;
+                            response.optout_rate = 0;
+                        }
+                        else {
+                            response.optout_rate = ((response.optout / response.delivered) * 100).toFixed(2);
+                        }
+    
+                        if (!response.spam) {
+                            response.spam = 0;
+                            response.spam_rate = 0;
+                        }
+                        else {
+                            response.spam_rate = ((response.spam / response.delivered) * 100).toFixed(2);
                         }
 
                         active_templates.push(response);
@@ -78,7 +120,7 @@ function(err, response) {
 
 setTimeout(() => {
     const Json2csvParser = require("json2csv").Parser;
-    const fields = ["template", "count", "confirmed_opens", "open_rate", "click", "cto_rate", "pv", "rev"];
+    const fields = ["template", "count", "delivered", "confirmed_opens", "open_rate", "click", "cto_rate", "pv", "purchase", "purchase_rate", "rev", "softbounce", "softbounce_rate", "optout", "optout_rate", "spam", "spam_rate"];
     const file_name = require(date_path).today + " send stats.csv";
 
     const json2csvParser = new Json2csvParser({ fields });
@@ -88,4 +130,4 @@ setTimeout(() => {
         if (err) throw err;
         console.log(`${file_name} was saved.`);
     }); 
-}, 1000);
+}, 5000);
