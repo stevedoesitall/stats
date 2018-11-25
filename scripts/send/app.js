@@ -39,7 +39,7 @@ function(err, response) {
                     }
                     else {
                         response.template = template.name;
-                        active_templates.push(response);
+
                         if (!response.confirmed_opens) {
                             response.confirmed_opens = 0;
                             response.open_rate = 0
@@ -67,6 +67,8 @@ function(err, response) {
                         else {
                             response.rev = response.rev / 100;
                         }
+                        
+                        active_templates.push(response);
                     }
                 });
             }
