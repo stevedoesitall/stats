@@ -31,7 +31,7 @@ function(err, response) {
     else {
         const all_lists = response.lists;
         all_lists.forEach(list => {
-            if (list.vars) {
+            if (list.vars && list.vars[list_var] == list_value) {
                 console.log(list);
             }
         });
