@@ -8,7 +8,7 @@ Tool for hitting the Sailthru /stats API endpoint, aggregating data from the las
 
 # List Stats
 
-Not yet finished. Will aggregate list for all primary lists where var "status" equals "active". May change this to time series for a specific list.
+/list API finds all primary lists, returning the vars associated with the list. If "status = active", loop through an array of dates (the last 30 days), returning the engagement data for that day. Then aggregate that data and convert to a CSV. This will create one CSV per list.
 
 # Trigger Stats
 
