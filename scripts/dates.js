@@ -22,9 +22,18 @@ let annyong = 86400000;
 let days_ago = 30;
 let end_date = today - annyong;
 let start_date = today - (annyong * days_ago);
+const dates_array = [];
+let ticker = 1;
+
+while (ticker <= days_ago) {
+    const date_item = today - (annyong * ticker);
+    dates_array.push(converter(date_item));
+    ticker++;
+}
 
 module.exports = {
     today: converter(today),
     start_date: converter(start_date),
-    end_date: converter(end_date)
+    end_date: converter(end_date),
+    dates_array
 };
