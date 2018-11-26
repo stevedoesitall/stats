@@ -10,6 +10,6 @@ Tool for hitting the Sailthru /stats API endpoint, aggregating data from the las
 
 Not yet finished. Will aggregate list for all primary lists where var "status" equals "active". May change this to time series for a specific list.
 
-# Trigger Stats:
+# Trigger Stats
 
 /template API is used to find all templates labeled "active" from the past 30 days. If template is active, the /stats API is called to retrive standard response data, such as opens and clicks, while also calculating open rate, click rate, etc.
