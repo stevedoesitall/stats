@@ -44,6 +44,7 @@ function(err, response) {
                         }
                         else {
                             response.date = date;
+                            response.avg_lists = (response.lists_count / response.email_count).toFixed(0);
                             list_data.push(response);
                         }   
                     });
@@ -61,7 +62,7 @@ function(err, response) {
                     list_data.sort(compare);
                       
                     const Json2csvParser = require("json2csv").Parser;
-                    const fields = ["date", "email_count", "engaged_count", "active_count", "passive_count", "disengaged_count", "dormant_count", "new_count", "optout_count", "hardbounce_count", "spam_count", "lists_count"];
+                    const fields = ["date", "email_count", "engaged_count", "active_count", "passive_count", "disengaged_count", "dormant_count", "new_count", "optout_count", "hardbounce_count", "spam_count", "avg_lists"];
                     const file_name = `${require(date_path).today} ${list.name} list stats.csv`;
                 
                     const json2csvParser = new Json2csvParser({ fields });
