@@ -1,6 +1,6 @@
 # Sailthru Stats Aggregator
 
-Tool for hitting the Sailthru /stats API endpoint, aggregating data from the last 30 days for blasts, triggers, or lists:
+Tool for hitting the Sailthru /stats API endpoint, aggregating data from the last 30 days for blasts, triggers, or lists. Example of file output in the "file_examples" folder.
 
 # Blast Stats
 
