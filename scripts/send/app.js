@@ -15,6 +15,7 @@ const stat = "send";
 const active_templates = [];
 
 const date_path = path.join(dir, "../dates.js");
+const today = require(date_path).today;
 const start_date = require(date_path).start_date;
 const end_date = require(date_path).end_date;
 
@@ -26,10 +27,11 @@ function(err, response) {
     else {
         const all_templates = response.templates;
         all_templates.forEach(template => {
+            const template_name = template.name;
             if (template.labels && template.labels.includes(label)) {
                 sailthru.apiGet("stats", {
                     "stat": stat,
-                    "template": template.name,
+                    "template": template_name,
                     "start_date": start_date,
                     "end_date": end_date
                     }, 
@@ -121,7 +123,7 @@ function(err, response) {
 setTimeout(() => {
     const Json2csvParser = require("json2csv").Parser;
     const fields = ["template", "count", "delivered", "confirmed_opens", "open_rate", "click", "cto_rate", "pv", "purchase", "purchase_rate", "rev", "softbounce", "softbounce_rate", "optout", "optout_rate", "spam", "spam_rate"];
-    const file_name = require(date_path).today + " send stats.csv";
+    const file_name = `${today} send stats.csv`;
 
     const json2csvParser = new Json2csvParser({ fields });
     const csv = json2csvParser.parse(active_templates);
