@@ -4,7 +4,7 @@ Tool for hitting the Sailthru /stats API endpoint, aggregating data from the las
 
 # Blast Stats
 
-/blast API is used to retrive all sent blasts from the past 30 days. The /stats API is then called to retrive standard response data, such as opens and clicks, while also calculating open rate, click rate, etc.
+/blast API is used to retrive all sent blasts from the past 30 days. The /stats API is then called to retrive standard response data, such as opens and clicks, while also calculating open rate, click rate, etc. Script to be updated to run the blast_query job for full export.
 
 # List Stats
 
