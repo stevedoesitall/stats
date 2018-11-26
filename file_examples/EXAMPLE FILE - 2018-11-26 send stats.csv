@@ -1,0 +1,5 @@
+"template","count","delivered","confirmed_opens","open_rate","click","cto_rate","pv","purchase","purchase_rate","rev","softbounce","softbounce_rate","optout","optout_rate","spam","spam_rate"
+"JS Confirm",3,3,1,"33.33",0,0,4,0,0,0.4,0,0,0,0,0,0
+"JS Welcome 2",5,5,1,"20.00",0,0,0,0,0,0,0,0,0,0,0,0
+"LO Test 1",9,9,4,"44.44",0,0,0,0,0,0,0,0,0,0,0,0
+"Beacon Test",7,7,2,"28.57",0,0,0,0,0,0,0,0,0,0,0,0
