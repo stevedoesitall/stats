@@ -38,15 +38,11 @@ const downloader = (job_id, name) => {
         else if (response.status == "completed") {
             const export_url = response.export_url;
             const filename = `${name} - ${response.filename}`;
-            const writeable_file = fs.createWriteStream(filename); //Makes CSV writeable
+            const file_path = reports_folder + filename;
+            const writeable_file = fs.createWriteStream(file_path); //Makes CSV writeable
             https.get(export_url, (response) => {
-            console.log(filename, "Downloading file...");
-            response.pipe(writeable_file);
-                fs.rename(scripts_folder + filename, reports_folder + filename, function(err) {
-                    if (err) {
-                        console.log("Rename error", err);
-                    }
-                });
+                console.log(filename, "Downloading file...");
+                response.pipe(writeable_file);
             }).on("error", (err) => {
                 console.log("Download error", err);
             });

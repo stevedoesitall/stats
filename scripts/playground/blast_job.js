@@ -39,66 +39,105 @@ const downloader = (job_id, name) => {
         else if (response.status == "completed") {
             const export_url = response.export_url;
             const filename = `${name} - ${response.filename}`;
-            const writeable_file = fs.createWriteStream(filename); //Makes CSV writeable
+            const file_path = reports_folder + filename;
+            const writeable_file = fs.createWriteStream(file_path); //Makes CSV writeable
             https.get(export_url, (response) => {
-            console.log(filename, "Downloading file...");
+                // console.log(response);
+            // console.log(filename, "Downloading file...");
             response.pipe(writeable_file);
-                fs.rename(scripts_folder + filename, reports_folder + filename, function(err) {
+                fs.readFile(file_path, function(err, response) {
                     if (err) {
-                        console.log("Rename error", err);
+                        console.log(err);
                     }
-                });
-                setTimeout(() => {
-                    fs.readFile(reports_folder + filename, function (err, response) {
-                        if (err) {
-                            console.log("Read error", err);
-                        }
-                        else if (response) {
-                            const parse = require("csv-parse");
-                            const Json2csvParser = require("json2csv").Parser;
-                            parse(response, { delimiter: ",", columns: true, trim: true }, function(err, rows) {
-                                if (err) {
-                                    console.log("Parse error", err);
-                                }
-                                else if (rows) {
-                                    const data = [];
+                    else {
+                        const data = [];
+                        const read_response = response;
+                        const parse = require("csv-parse");
+                        parse(read_response, { delimiter: ",", columns: true, trim: true }, function(err, response) { 
+                            if (err) {
+                                console.log(err);
+                            }
+                            else {
+                                response.forEach(field => {
                                     let counter = 1;
-                                    rows.forEach(row => {
-                                        counter = counter + 1;
-                                        const id = row["profile_id"];
-                                        const key = "sid";
-                                        sailthru.apiGet("user", {
-                                            id: id,
-                                            key: key
-                                        }, function(err, response) {
-                                            if (err) {
-                                                console.log("User GET error", err);
-                                            }
-                                            else {
-                                                const email = response.keys.email;
-                                                row.email = email;
-                                                data.push(row);
-                                            }
-                                        });
-
-                                        if (counter == rows.length) {
+                                    const id = field["profile_id"];
+                                    const key = "sid";
+                                    sailthru.apiGet("user", {
+                                        id: id,
+                                        key: key
+                                    }, function(err, response) {
+                                        if (err) {
+                                            console.log(err);
+                                        }
+                                        else {
+                                            field.email = response.keys.email;
+                                            data.push(field);
+                                        }
+                                        
+                                        if (counter == response.length) {
                                             console.log(data);
                                         }
+                                        else {
+                                            counter = counter + 1;
+                                        }
                                     });
-                                    // const fields = Object.keys(data[0]);
-                                    // console.log(data);
-                                    // const json2csvParser = new Json2csvParser({ fields });
-                                    // const csv = json2csvParser.parse(data);
-                                    // fs.writeFile(reports_folder + filename, csv, function(err) {
-                                    //     if (err) {
-                                    //         console.log("Try again.");
-                                    //     }
-                                    // });
-                                }
-                            });
-                        }
-                    });
-                }, 3000);
+                                });
+                            }
+                        });
+                    }
+                });
+
+                // setTimeout(() => {
+                //     fs.readFile(reports_folder + filename, function (err, response) {
+                //         if (err) {
+                //             console.log("Read error", err);
+                //         }
+                //         else if (response) {
+                //             const parse = require("csv-parse");
+                //             const Json2csvParser = require("json2csv").Parser;
+                //             parse(response, { delimiter: ",", columns: true, trim: true }, function(err, rows) {
+                //                 if (err) {
+                //                     console.log("Parse error", err);
+                //                 }
+                //                 else if (rows) {
+                //                     const data = [];
+                //                     let counter = 1;
+                //                     rows.forEach(row => {
+                //                         counter = counter + 1;
+                //                         const id = row["profile_id"];
+                //                         const key = "sid";
+                //                         sailthru.apiGet("user", {
+                //                             id: id,
+                //                             key: key
+                //                         }, function(err, response) {
+                //                             if (err) {
+                //                                 console.log("User GET error", err);
+                //                             }
+                //                             else {
+                //                                 const email = response.keys.email;
+                //                                 row.email = email;
+                //                                 data.push(row);
+                //                             }
+                //                         });
+
+                //                         if (counter == rows.length) {
+                //                             console.log(data);
+                //                         }
+                //                     });
+                //                     // const fields = Object.keys(data[0]);
+                //                     // console.log(data);
+                //                     // const json2csvParser = new Json2csvParser({ fields });
+                //                     // const csv = json2csvParser.parse(data);
+                //                     // fs.writeFile(reports_folder + filename, csv, function(err) {
+                //                     //     if (err) {
+                //                     //         console.log("Try again.");
+                //                     //     }
+                //                     // });
+                //                 }
+                //             });
+                //         }
+                //     });
+                // }, 3000);
             }).on("error", (err) => {
                 console.log("Download error", err);
             });
