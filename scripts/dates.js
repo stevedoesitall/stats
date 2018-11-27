@@ -33,6 +33,7 @@ while (ticker <= days_ago) {
 
 module.exports = {
     today: converter(today),
+    yesterday: converter(today - annyong),
     start_date: converter(start_date),
     end_date: converter(end_date),
     dates_array

@@ -13,9 +13,6 @@ const api_key = require(creds).api_key;
 const api_secret = require(creds).api_secret;
 const sailthru = require("sailthru-client").createSailthruClient(api_key, api_secret);
 
-const parse = require("csv-parse");
-const Json2csvParser = require("json2csv").Parser;
-
 const job = "blast_query";
 const status = "sent";
 const limit = 0;
@@ -24,8 +21,6 @@ const date_path = path.join(dir, "../dates.js");
 const today = require(date_path).today;
 const start_date = require(date_path).start_date;
 const end_date = require(date_path).end_date;
-
-const data = [];
 
 const downloader = (job_id, name) => {
     sailthru.apiGet("job", {
@@ -46,48 +41,66 @@ const downloader = (job_id, name) => {
             const filename = `${name} - ${response.filename}`;
             const writeable_file = fs.createWriteStream(filename); //Makes CSV writeable
             https.get(export_url, (response) => {
-                console.log(filename, "Downloading file...");
-                response.pipe(writeable_file);
-                fs.rename(scripts_folder + filename, reports_folder + filename, function(err) { 
+            console.log(filename, "Downloading file...");
+            response.pipe(writeable_file);
+                fs.rename(scripts_folder + filename, reports_folder + filename, function(err) {
                     if (err) {
-                        console.log(err);
+                        console.log("Rename error", err);
                     }
                 });
-                fs.readFile(reports_folder + filename, function (err, response) {
-                    if (response) {
-                        parse(response, { delimiter: ",", columns: true, trim: true }, function(err, rows) {
-                            if (rows) {
-                                rows.forEach(row => {
-                                    const id = row["profile_id"];
-                                    const key = "sid";
-                                    sailthru.apiGet("user", {
-                                        id: id,
-                                        key: key
-                                    }, function(err, response) {
-                                        if (err) {
-                                            console.log(err);
-                                        }
-                                        else {
-                                            const email = response.keys.email;
-                                            row.email = email;
-                                            data.push(row);
+                setTimeout(() => {
+                    fs.readFile(reports_folder + filename, function (err, response) {
+                        if (err) {
+                            console.log("Read error", err);
+                        }
+                        else if (response) {
+                            const parse = require("csv-parse");
+                            const Json2csvParser = require("json2csv").Parser;
+                            parse(response, { delimiter: ",", columns: true, trim: true }, function(err, rows) {
+                                if (err) {
+                                    console.log("Parse error", err);
+                                }
+                                else if (rows) {
+                                    const data = [];
+                                    let counter = 1;
+                                    rows.forEach(row => {
+                                        counter = counter + 1;
+                                        const id = row["profile_id"];
+                                        const key = "sid";
+                                        sailthru.apiGet("user", {
+                                            id: id,
+                                            key: key
+                                        }, function(err, response) {
+                                            if (err) {
+                                                console.log("User GET error", err);
+                                            }
+                                            else {
+                                                const email = response.keys.email;
+                                                row.email = email;
+                                                data.push(row);
+                                            }
+                                        });
+
+                                        if (counter == rows.length) {
+                                            console.log(data);
                                         }
                                     });
-                                });
-                                // const fields = Object.keys(data[0]);
-                                // const json2csvParser = new Json2csvParser({ fields });
-                                // const csv = json2csvParser.parse(data);
-                                // fs.writeFile(reports_folder + filename, csv, function(err) {
-                                //     if (err) {
-                                //         console.log("Try again.");
-                                //     }
-                                // });
-                            }
-                        });
-                    }
-                });
+                                    // const fields = Object.keys(data[0]);
+                                    // console.log(data);
+                                    // const json2csvParser = new Json2csvParser({ fields });
+                                    // const csv = json2csvParser.parse(data);
+                                    // fs.writeFile(reports_folder + filename, csv, function(err) {
+                                    //     if (err) {
+                                    //         console.log("Try again.");
+                                    //     }
+                                    // });
+                                }
+                            });
+                        }
+                    });
+                }, 3000);
             }).on("error", (err) => {
-                console.error(err);
+                console.log("Download error", err);
             });
         }
     });
