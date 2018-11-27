@@ -24,7 +24,7 @@ const end_date = require(date_path).today;
 const downloader = (job_id, name) => {
     sailthru.apiGet("job", {
         "job_id": job_id
-        }, 
+    }, 
     function(err, response) {
         if (err || response.error) {
             console.log(err);
@@ -72,7 +72,7 @@ function(err, response) {
             sailthru.apiPost("job", {
                 "job": job,
                 "blast_id": blast_id
-                }, 
+            }, 
             function(err, response) {
                 if (err || response.error) {
                     console.log(`No stats for ${blast_id}.`);
