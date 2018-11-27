@@ -14,6 +14,7 @@ const api_secret = require(creds).api_secret;
 const sailthru = require("sailthru-client").createSailthruClient(api_key, api_secret);
 
 const parse = require("csv-parse");
+const Json2csvParser = require("json2csv").Parser;
 
 const job = "blast_query";
 const status = "sent";
@@ -24,7 +25,9 @@ const today = require(date_path).today;
 const start_date = require(date_path).start_date;
 const end_date = require(date_path).end_date;
 
-const downloader = (job_id) => {
+const data = [];
+
+const downloader = (job_id, name) => {
     sailthru.apiGet("job", {
         "job_id": job_id
         }, 
@@ -35,20 +38,52 @@ const downloader = (job_id) => {
         else if (response.status == "pending") {
             console.log("Retrying...");
             setTimeout(() => {
-                downloader(job_id);
+                downloader(job_id, name);
             }, 10000);
         }
         else if (response.status == "completed") {
             const export_url = response.export_url;
-            const filename = response.filename;
+            const filename = `${name} - ${response.filename}`;
             const writeable_file = fs.createWriteStream(filename); //Makes CSV writeable
             https.get(export_url, (response) => {
-                //Need to update to retrieve blast name and user email addresses
                 console.log(filename, "Downloading file...");
                 response.pipe(writeable_file);
                 fs.rename(scripts_folder + filename, reports_folder + filename, function(err) { 
                     if (err) {
                         console.log(err);
+                    }
+                });
+                fs.readFile(reports_folder + filename, function (err, response) {
+                    if (response) {
+                        parse(response, { delimiter: ",", columns: true, trim: true }, function(err, rows) {
+                            if (rows) {
+                                rows.forEach(row => {
+                                    const id = row["profile_id"];
+                                    const key = "sid";
+                                    sailthru.apiGet("user", {
+                                        id: id,
+                                        key: key
+                                    }, function(err, response) {
+                                        if (err) {
+                                            console.log(err);
+                                        }
+                                        else {
+                                            const email = response.keys.email;
+                                            row.email = email;
+                                            data.push(row);
+                                        }
+                                    });
+                                });
+                                // const fields = Object.keys(data[0]);
+                                // const json2csvParser = new Json2csvParser({ fields });
+                                // const csv = json2csvParser.parse(data);
+                                // fs.writeFile(reports_folder + filename, csv, function(err) {
+                                //     if (err) {
+                                //         console.log("Try again.");
+                                //     }
+                                // });
+                            }
+                        });
                     }
                 });
             }).on("error", (err) => {
@@ -61,8 +96,8 @@ const downloader = (job_id) => {
 sailthru.apiGet("blast", {
     status: status,
     limit: limit,
-    start_date: "2018-10-22",
-    end_date: "2018-11-26"
+    start_date: "2018-10-09",
+    end_date: "2018-10-11"
  }, 
 function(err, response) {
     if (err) {
@@ -72,6 +107,7 @@ function(err, response) {
         const all_blasts = response.blasts;
         all_blasts.forEach(blast => {
             const blast_id = blast.blast_id;
+            const name = blast.name;
             sailthru.apiPost("job", {
                 "job": job,
                 "blast_id": blast_id
@@ -83,7 +119,7 @@ function(err, response) {
                 else {
                     const job_id = response.job_id;
                     setTimeout(() => {
-                        downloader(job_id);
+                        downloader(job_id, name);
                     }, 10000)
                 }
             });
