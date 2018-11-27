@@ -72,7 +72,7 @@ function(err, response) {
             sailthru.apiPost("job", {
                 "job": job,
                 "blast_id": blast_id
-            }, 
+            },
             function(err, response) {
                 if (err || response.error) {
                     console.log(`No stats for ${blast_id}.`);
