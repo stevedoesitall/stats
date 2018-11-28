@@ -4,8 +4,10 @@ const https = require("https");
 
 const dir = __dirname;
 
+const top_folder = "Blast";
+const sub_folder = "Details";
+
 const reports_folder = path.join(dir, "../../../../Reports/Blast/");
-const scripts_folder = path.join(dir, "../");
 
 const creds = path.join(dir, "../creds.json");
 
@@ -24,7 +26,7 @@ const end_date = require(date_path).today;
 const downloader = (job_id, name) => {
     sailthru.apiGet("job", {
         "job_id": job_id
-    }, 
+        }, 
     function(err, response) {
         if (err || response.error) {
             console.log(err);
@@ -39,10 +41,58 @@ const downloader = (job_id, name) => {
             const export_url = response.export_url;
             const filename = `${name} - ${response.filename}`;
             const file_path = reports_folder + filename;
-            const writeable_file = fs.createWriteStream(file_path); //Makes CSV writeable
+            const writeable_file = fs.createWriteStream(file_path); //Creates a writable CSV file
             https.get(export_url, (response) => {
-                console.log(filename, "Downloading file...");
-                response.pipe(writeable_file);
+            console.log("Downloading file...", filename);
+            response.pipe(writeable_file); //Pipes in the job response data (i.e. the blast info) in the CSV
+                fs.readFile(file_path, function(err, response) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    else {
+                        const data = [];
+                        const read_response = response;
+                        const parse = require("csv-parse");
+                        parse(read_response, { delimiter: ",", columns: true, trim: true }, function(err, response) { 
+                            if (err) {
+                                console.log(err);
+                            }
+                            else {
+                                let counter = 1;
+                                const all_users = response;
+                                all_users.forEach(user => {
+                                    const id = user["profile_id"];
+                                    const key = "sid";
+                                    sailthru.apiGet("user", {
+                                        id: id,
+                                        key: key
+                                    }, function(err, response) {
+                                        if (err) {
+                                            console.log(err);
+                                        }
+                                        else {
+                                            user.email = response.keys.email;
+                                            data.push(user);
+                                        }
+                                        
+                                        if (counter == all_users.length) {
+                                            const fields = Object.keys(data[0]);
+                                            const Json2csvParser = require("json2csv").Parser;
+                                            const json2csvParser = new Json2csvParser({ fields });
+                                            const csv = json2csvParser.parse(data);
+                                            fs.writeFile(file_path, csv, function(err) {
+                                                if (err) {
+                                                    console.log(err);
+                                                }
+                                            });
+                                        }
+                                        counter++;
+                                    });
+                                });
+                            }
+                        });
+                    }
+                });
             }).on("error", (err) => {
                 console.log("Download error", err);
             });
@@ -55,7 +105,7 @@ sailthru.apiGet("blast", {
     limit: limit,
     start_date: start_date,
     end_date: end_date
- }, 
+}, 
 function(err, response) {
     if (err) {
         console.log(err);

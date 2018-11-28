@@ -2,6 +2,8 @@ const path = require("path");
 const fs = require("fs");
 const dir = __dirname;
 
+const top_folder = "List";
+
 const reports_folder = path.join(dir, "../../../../Reports/List/");
 
 const creds = path.join(dir, "../creds.json");

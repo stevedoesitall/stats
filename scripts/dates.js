@@ -31,6 +31,8 @@ while (ticker <= days_ago) {
     ticker++;
 }
 
+//Need to create vars for new file paths
+
 module.exports = {
     today: converter(today),
     yesterday: converter(today - annyong),

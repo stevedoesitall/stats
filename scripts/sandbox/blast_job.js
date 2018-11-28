@@ -58,9 +58,10 @@ const downloader = (job_id, name) => {
                                 console.log(err);
                             }
                             else {
-                                response.forEach(field => {
-                                    let counter = 1;
-                                    const id = field["profile_id"];
+                                let counter = 1;
+                                const all_users = response;
+                                all_users.forEach(user => {
+                                    const id = user["profile_id"];
                                     const key = "sid";
                                     sailthru.apiGet("user", {
                                         id: id,
@@ -70,74 +71,28 @@ const downloader = (job_id, name) => {
                                             console.log(err);
                                         }
                                         else {
-                                            field.email = response.keys.email;
-                                            data.push(field);
+                                            user.email = response.keys.email;
+                                            data.push(user);
                                         }
                                         
-                                        if (counter == response.length) {
-                                            console.log(data);
+                                        if (counter == all_users.length) {
+                                            const fields = Object.keys(data[0]);
+                                            const Json2csvParser = require("json2csv").Parser;
+                                            const json2csvParser = new Json2csvParser({ fields });
+                                            const csv = json2csvParser.parse(data);
+                                            fs.writeFile(file_path, csv, function(err) {
+                                                if (err) {
+                                                    console.log(err);
+                                                }
+                                            });
                                         }
-                                        else {
-                                            counter = counter + 1;
-                                        }
+                                        counter++;
                                     });
                                 });
                             }
                         });
                     }
                 });
-
-                // setTimeout(() => {
-                //     fs.readFile(reports_folder + filename, function (err, response) {
-                //         if (err) {
-                //             console.log("Read error", err);
-                //         }
-                //         else if (response) {
-                //             const parse = require("csv-parse");
-                //             const Json2csvParser = require("json2csv").Parser;
-                //             parse(response, { delimiter: ",", columns: true, trim: true }, function(err, rows) {
-                //                 if (err) {
-                //                     console.log("Parse error", err);
-                //                 }
-                //                 else if (rows) {
-                //                     const data = [];
-                //                     let counter = 1;
-                //                     rows.forEach(row => {
-                //                         counter = counter + 1;
-                //                         const id = row["profile_id"];
-                //                         const key = "sid";
-                //                         sailthru.apiGet("user", {
-                //                             id: id,
-                //                             key: key
-                //                         }, function(err, response) {
-                //                             if (err) {
-                //                                 console.log("User GET error", err);
-                //                             }
-                //                             else {
-                //                                 const email = response.keys.email;
-                //                                 row.email = email;
-                //                                 data.push(row);
-                //                             }
-                //                         });
-
-                //                         if (counter == rows.length) {
-                //                             console.log(data);
-                //                         }
-                //                     });
-                //                     // const fields = Object.keys(data[0]);
-                //                     // console.log(data);
-                //                     // const json2csvParser = new Json2csvParser({ fields });
-                //                     // const csv = json2csvParser.parse(data);
-                //                     // fs.writeFile(reports_folder + filename, csv, function(err) {
-                //                     //     if (err) {
-                //                     //         console.log("Try again.");
-                //                     //     }
-                //                     // });
-                //                 }
-                //             });
-                //         }
-                //     });
-                // }, 3000);
             }).on("error", (err) => {
                 console.log("Download error", err);
             });

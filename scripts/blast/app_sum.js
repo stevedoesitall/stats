@@ -2,6 +2,9 @@ const path = require("path");
 const fs = require("fs");
 const dir = __dirname;
 
+const top_folder = "Blast";
+const sub_folder = "Summary";
+
 const reports_folder = path.join(dir, "../../../../Reports/Blast/");
 
 const creds = path.join(dir, "../creds.json");
