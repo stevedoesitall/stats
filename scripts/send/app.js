@@ -16,7 +16,7 @@ const label = "active";
 const stat = "send";
 const active_templates = [];
 
-const date_path = path.join(dir, "../dates.js");
+const date_path = path.join(dir, "../modules/dates.js");
 const today = require(date_path).today;
 const start_date = require(date_path).start_date;
 const end_date = require(date_path).end_date;

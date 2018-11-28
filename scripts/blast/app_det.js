@@ -19,7 +19,7 @@ const job = "blast_query";
 const status = "sent";
 const limit = 0;
 
-const date_path = path.join(dir, "../dates.js");
+const date_path = path.join(dir, "../modules/dates.js");
 const start_date = require(date_path).yesterday;
 const end_date = require(date_path).today;
 

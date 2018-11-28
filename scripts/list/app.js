@@ -2,10 +2,6 @@ const path = require("path");
 const fs = require("fs");
 const dir = __dirname;
 
-const top_folder = "List";
-
-const reports_folder = path.join(dir, "../../../../Reports/List/");
-
 const creds = path.join(dir, "../creds.json");
 
 const api_key = require(creds).api_key;
@@ -18,9 +14,20 @@ const fields = { vars: 1 };
 const stat = "list";
 const primary = true;
 
-const date_path = path.join(dir, "../dates.js");
+const date_path = path.join(dir, "../modules/dates.js");
+const generator_path = path.join(dir, "../modules/folder_gen.js");
+
 const dates_array = require(date_path).dates_array;
 const today = require(date_path).today;
+
+const folder_month = require(date_path).folder_month;
+const folder_year = require(date_path).folder_year;
+
+const reports_folder = path.join(dir, "../../../../Reports/List/");
+const top_folder = `${reports_folder}${folder_year}`
+const sub_folder = `${reports_folder}${folder_year}/${folder_month}`;
+
+const generator = require(generator_path).generator;
 
 sailthru.apiGet("list", {
     primary: primary,
@@ -72,10 +79,7 @@ function(err, response) {
                     const json2csvParser = new Json2csvParser({ fields });
                     const csv = json2csvParser.parse(list_data);
                     console.log(csv);
-                    fs.writeFile(reports_folder + file_name, csv, (err) => {
-                        if (err) throw err;
-                        console.log(`${file_name} was saved.`);
-                    }); 
+                        generator(reports_folder + file_name, csv);
                 }, 5000);
             }
         });
