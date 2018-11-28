@@ -22,6 +22,7 @@ const date_path = path.join(dir, "../dates.js");
 const today = require(date_path).today;
 const start_date = require(date_path).start_date;
 const end_date = require(date_path).end_date;
+const converter = require(date_path).converter;
 
 sailthru.apiGet("blast", {
     status: status,
@@ -50,6 +51,8 @@ function(err, response) {
                 else {
                     response.name = blast.name;
                     response.blast_id = blast_id;
+
+                    response.date = converter(new Date(blast.schedule_time).getTime());
 
                     if (!response.hardbounce) {
                         response.hardbounce = 0;
@@ -131,8 +134,19 @@ function(err, response) {
 });
 
 setTimeout(() => {
+
+    function compare(a, b) {
+        if (a.date < b.date)
+          return -1;
+        if (a.date > b.date)
+          return 1;
+        return 0;
+      }
+
+    active_blasts.sort(compare);
+    
     const Json2csvParser = require("json2csv").Parser;
-    const fields = ["name", "blast_id", "count", "delivered", "confirmed_opens", "open_total", "open_rate", "click_total", "click_multiple_urls", "cto_rate", "pv", "purchase", "purchase_rate", "rev", "optout", "optout_rate", "hardbounce", "hardbounce_rate", "softbounce", "softbounce_rate", "spam", "spam_rate"];
+    const fields = ["date", "name", "blast_id", "count", "delivered", "confirmed_opens", "open_total", "open_rate", "click_total", "click_multiple_urls", "cto_rate", "pv", "purchase", "purchase_rate", "rev", "optout", "optout_rate", "hardbounce", "hardbounce_rate", "softbounce", "softbounce_rate", "spam", "spam_rate"];
     const file_name = `${today} blast stats.csv`;
 
     const json2csvParser = new Json2csvParser({ fields });
