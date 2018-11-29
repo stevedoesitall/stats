@@ -12,6 +12,13 @@ const sub_folder = `${reports_folder}${folder_year}/${folder_month}`;
 
 const test_file = "test.txt";
 
+if (fs.existsSync(top_folder)) {
+    console.log("hi");
+}
+else {
+    console.log("bye");
+}
+
 const generator = (file, content) => {
     fs.readdir(top_folder, function(err) {
         if (err) {
