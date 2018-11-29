@@ -24,7 +24,6 @@ const generator = (top_folder, sub_folder, file, content) => {
     }
 
     else if (!fs.existsSync(sub_folder)) {
-
         fs.mkdirSync(sub_folder);
 
         setTimeout(() => {
@@ -37,7 +36,6 @@ const generator = (top_folder, sub_folder, file, content) => {
                 }
             });
         }, 1000);
-
     }
     
     else {

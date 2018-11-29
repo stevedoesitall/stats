@@ -23,7 +23,7 @@ const reports_folder = path.join(dir, "../../../../Reports/Send/");
 const folder_month = require(date_path).folder_month;
 const folder_year = require(date_path).folder_year;
 
-const top_folder = `${reports_folder}${folder_year}`
+const top_folder = `${reports_folder}${folder_year}`;
 const sub_folder = `${reports_folder}${folder_year}/${folder_month}`;
 
 const generator = require(generator_path).generator;

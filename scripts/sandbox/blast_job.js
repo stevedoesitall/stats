@@ -103,8 +103,8 @@ const downloader = (job_id, name) => {
 sailthru.apiGet("blast", {
     status: status,
     limit: limit,
-    start_date: "2018-10-09",
-    end_date: "2018-10-11"
+    start_date: start_date,
+    end_date: end_date
  }, 
 function(err, response) {
     if (err) {
