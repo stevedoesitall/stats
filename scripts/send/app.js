@@ -2,10 +2,6 @@ const path = require("path");
 const fs = require("fs");
 const dir = __dirname;
 
-const top_folder = "Send";
-
-const reports_folder = path.join(dir, "../../../../Reports/Send/");
-
 const creds = path.join(dir, "../creds.json");
 
 const api_key = require(creds).api_key;
@@ -17,9 +13,20 @@ const stat = "send";
 const active_templates = [];
 
 const date_path = path.join(dir, "../modules/dates.js");
+const generator_path = path.join(dir, "../modules/folder_gen.js");
+
 const today = require(date_path).today;
 const start_date = require(date_path).start_date;
 const end_date = require(date_path).end_date;
+
+const reports_folder = path.join(dir, "../../../../Reports/Send/");
+const folder_month = require(date_path).folder_month;
+const folder_year = require(date_path).folder_year;
+
+const top_folder = `${reports_folder}${folder_year}`
+const sub_folder = `${reports_folder}${folder_year}/${folder_month}`;
+
+const generator = require(generator_path).generator;
 
 sailthru.apiGet("template", { }, 
 function(err, response) {
@@ -129,9 +136,5 @@ setTimeout(() => {
 
     const json2csvParser = new Json2csvParser({ fields });
     const csv = json2csvParser.parse(active_templates);
-    console.log(csv);
-    fs.writeFile(reports_folder + file_name, csv, (err) => {
-        if (err) throw err;
-        console.log(`${file_name} was saved.`);
-    }); 
+        generator(top_folder, sub_folder, file_name, csv);
 }, 5000);

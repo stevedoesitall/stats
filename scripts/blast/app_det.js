@@ -4,11 +4,6 @@ const https = require("https");
 
 const dir = __dirname;
 
-const top_folder = "Blast";
-const sub_folder = "Details";
-
-const reports_folder = path.join(dir, "../../../../Reports/Blast/");
-
 const creds = path.join(dir, "../creds.json");
 
 const api_key = require(creds).api_key;
@@ -20,8 +15,19 @@ const status = "sent";
 const limit = 0;
 
 const date_path = path.join(dir, "../modules/dates.js");
+const generator_path = path.join(dir, "../modules/folder_gen.js");
+
 const start_date = require(date_path).yesterday;
 const end_date = require(date_path).today;
+
+const folder_month = require(date_path).folder_month;
+const folder_year = require(date_path).folder_year;
+
+const reports_folder = path.join(dir, "../../../../Reports/Blast/Detail/");
+const top_folder = `${reports_folder}${folder_year}`
+const sub_folder = `${reports_folder}${folder_year}/${folder_month}`;
+
+const generator = require(generator_path).generator;
 
 const downloader = (job_id, name) => {
     sailthru.apiGet("job", {
@@ -39,11 +45,11 @@ const downloader = (job_id, name) => {
         }
         else if (response.status == "completed") {
             const export_url = response.export_url;
-            const filename = `${name} - ${response.filename}`;
-            const file_path = reports_folder + filename;
+            const file_name = `${name} - ${response.filename}`;
+            const file_path = reports_folder + file_name;
             const writeable_file = fs.createWriteStream(file_path); //Creates a writable CSV file
             https.get(export_url, (response) => {
-            console.log("Downloading file...", filename);
+            console.log("Downloading file...", file_name);
             response.pipe(writeable_file); //Pipes in the job response data (i.e. the blast info) in the CSV
                 fs.readFile(file_path, function(err, response) {
                     if (err) {
@@ -80,11 +86,10 @@ const downloader = (job_id, name) => {
                                             const Json2csvParser = require("json2csv").Parser;
                                             const json2csvParser = new Json2csvParser({ fields });
                                             const csv = json2csvParser.parse(data);
-                                            fs.writeFile(file_path, csv, function(err) {
-                                                if (err) {
-                                                    console.log(err);
-                                                }
-                                            });
+                                                generator(top_folder, sub_folder, file_name, csv);
+                                                fs.unlinkSync(reports_folder + file_name, function(response) {
+                                                    console.log(response);
+                                                });
                                         }
                                         counter++;
                                     });

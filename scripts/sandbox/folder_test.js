@@ -1,13 +1,24 @@
+const path = require("path");
 const fs = require("fs");
+const dir = __dirname;
 
-const generator = (top_folder, sub_folder, file, content) => {
+const date_path = path.join(dir, "../modules/dates.js");
+
+const folder_month = require(date_path).folder_month;
+const folder_year = require(date_path).folder_year;
+
+const list_folder = path.join(dir, "../../../../Reports/List/");
+const blast_folder = path.join(dir, "../../../../Reports/Blast/");
+const send_folder = path.join(dir, "../../../../Reports/Send/");
+
+const list_generator = (file, content) => {
+    const top_folder = `${list_folder}${folder_year}`;
+    const sub_folder = `${list_folder}${folder_year}/${folder_month}`;
     if (!fs.existsSync(top_folder)) {
         fs.mkdirSync(top_folder);
         setTimeout(() => {
             fs.mkdir(sub_folder, function(response) {
-                if (response && response.code) {
-                    console.log("Folder exists", response.code);
-                }
+                console.log("Folder exists", response.code);
             });
         }, 1000);
 
@@ -24,9 +35,8 @@ const generator = (top_folder, sub_folder, file, content) => {
     }
 
     else if (!fs.existsSync(sub_folder)) {
-
         fs.mkdirSync(sub_folder);
-
+        
         setTimeout(() => {
             fs.writeFile(sub_folder + "/" + file, content, function(err) {
                 if (err) {
@@ -37,7 +47,6 @@ const generator = (top_folder, sub_folder, file, content) => {
                 }
             });
         }, 1000);
-
     }
     
     else {
@@ -53,5 +62,5 @@ const generator = (top_folder, sub_folder, file, content) => {
 };
 
 module.exports = {
-    generator
+    list_generator
 };
