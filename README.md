@@ -4,7 +4,7 @@ Tool for hitting the Sailthru /stats API endpoint, aggregating data from the las
 
 # Blast Stats (Summary)
 
-Tool for retrieving both aggregated stats via /blast API is used to retrive all sent blasts from the past 30 days. The /stats API is then called to retrive standard response data, such as opens and clicks, while also calculating open rate, click rate, etc.
+Tool for retrieving both aggregated stats via /blast API is used to retrieve all sent blasts from the past 30 days. The /stats API is then called to retrieve standard response data, such as opens and clicks, while also calculating open rate, click rate, etc.
 
 # Blast Stats (Detail)
 
@@ -16,7 +16,7 @@ Tool for retrieving campaign detail reports for all blasts in the past day, usin
 
 # Trigger Stats
 
-/template API is used to find all templates labeled "active" from the past 30 days. If template is active, the /stats API is called to retrive standard response data, such as opens and clicks, while also calculating open rate, click rate, etc.
+/template API is used to find all templates labeled "active" from the past 30 days. If template is active, the /stats API is called to retrieve standard response data, such as opens and clicks, while also calculating open rate, click rate, etc.
 
 # Modules
 
@@ -31,6 +31,9 @@ NodeJS
 # Packages
 
 sailthru-client to make API calls to Sailthru for blast, send, and list data
+
 json2csv for converting response data to CSV
+
 csv-parse to isolate user ID field in the CSV for retrieving the raw email
+
 node-cron for automated scheduling
