@@ -1,6 +1,6 @@
 # Sailthru Stats Aggregator
 
-Tool for hitting the Sailthru /stats API endpoint, aggregating data from the last 30 days for blasts, triggers, or lists. Example of file output in the "file_examples" folder.
+Tool for hitting the Sailthru /stats API endpoint, aggregating data from the last 30 days for blasts, triggers, or lists. Example of file output in the "file_examples" folder. Built in NodeJS.
 
 # Blast Stats (Summary)
 
@@ -23,10 +23,6 @@ Tool for retrieving campaign detail reports for all blasts in the past day, usin
 dates.js used to generate ISO-friendly date stamps in YYYY-MM-DD format and for the months and years for the directory names and for the start and end dates for retrieving stats.
 
 folder_gen.js pipes the file information in, checks if the top-level directory (TLD) exists (i.e. the year directory). If not, it creates that directory plus the subdirectory (SD) (i.e. the current month). If the TLD does exist but the SD doesn't, the SD is created. Otherwise, no new directories are created. Finally, the generated files are placed in the appropriate directory based on the year and month (note that it's based on the year/month the script was run, not the year/month the data is from).
-
-# Stack
-
-NodeJS
 
 # Packages
 
