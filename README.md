@@ -1,6 +1,6 @@
 # Sailthru Stats Aggregator
 
-Tool for hitting the Sailthru /stats API endpoint, aggregating data from the last 30 days for blasts, triggers, or lists. Example of file output in the "file_examples" folder. Built in NodeJS.
+Tool for hitting the Sailthru /stats and /job API endpoints, aggregating data from the last 30 days for blasts, triggers, or lists. Example of file output in the "file_examples" folder. Built in NodeJS.
 
 # Blast Stats (Summary)
 
