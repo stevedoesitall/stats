@@ -9,9 +9,11 @@ const api_secret = require(creds).api_secret;
 const sailthru = require("sailthru-client").createSailthruClient(api_key, api_secret);
 
 const stat = "blast";
+const sub_type = "summary";
+
 const status = "sent";
 const limit = 0;
-const active_blasts = [];
+const data = [];
 
 const date_path = path.join(dir, "../modules/dates.js");
 const generator_path = path.join(dir, "../modules/folder_gen.js");
@@ -24,7 +26,7 @@ const converter = require(date_path).converter;
 const folder_month = require(date_path).folder_month;
 const folder_year = require(date_path).folder_year;
 
-const reports_folder = path.join(dir, "../../../../Reports/Blast/Summary/");
+const reports_folder = path.join(dir, `../../../../Reports/${stat.toUpperCase()}/${sub_type.toUpperCase()}/`);
 const top_folder = `${reports_folder}${folder_year}`;
 const sub_folder = `${reports_folder}${folder_year}/${folder_month}`;
 
@@ -49,7 +51,7 @@ function(err, response) {
                 "blast_id": blast_id,
                 "start_date": start_date,
                 "end_date": end_date
-                }, 
+            }, 
             function(err, response) {
                 if (err || response.error) {
                     console.log(`No stats for ${blast_id}.`);
@@ -132,7 +134,7 @@ function(err, response) {
                         response.spam_rate = ((response.spam / response.delivered) * 100).toFixed(2);
                     }
 
-                    active_blasts.push(response);
+                    data.push(response);
                 }
             });
         });
@@ -149,13 +151,13 @@ setTimeout(() => {
         return 0;
       }
 
-    active_blasts.sort(compare);
+    data.sort(compare);
     
     const Json2csvParser = require("json2csv").Parser;
     const fields = ["date", "name", "blast_id", "count", "delivered", "confirmed_opens", "open_total", "open_rate", "click_total", "click_multiple_urls", "cto_rate", "pv", "purchase", "purchase_rate", "rev", "optout", "optout_rate", "hardbounce", "hardbounce_rate", "softbounce", "softbounce_rate", "spam", "spam_rate"];
     const file_name = `${today} blast stats.csv`;
 
     const json2csvParser = new Json2csvParser({ fields });
-    const csv = json2csvParser.parse(active_blasts);
+    const csv = json2csvParser.parse(data);
         generator(top_folder, sub_folder, file_name, csv);
 }, 5000);

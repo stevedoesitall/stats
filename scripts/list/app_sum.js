@@ -23,7 +23,7 @@ const today = require(date_path).today;
 const folder_month = require(date_path).folder_month;
 const folder_year = require(date_path).folder_year;
 
-const reports_folder = path.join(dir, "../../../../Reports/List/");
+const reports_folder = path.join(dir, `../../../../Reports/${stat.toUpperCase()}/`);
 const top_folder = `${reports_folder}${folder_year}`;
 const sub_folder = `${reports_folder}${folder_year}/${folder_month}`;
 
@@ -42,7 +42,7 @@ function(err, response) {
         all_lists.forEach(list => {
             const list_name = list.name;
             if (list.vars && list.vars[list_var] == list_value) {
-                const list_data = [];
+                const data = [];
                 dates_array.forEach(date => {
                     sailthru.apiGet("stats", {
                         stat: stat,
@@ -64,14 +64,14 @@ function(err, response) {
                                 else {
                                     response.date = date;
                                     response.avg_lists = (response.lists_count / response.email_count).toFixed(0);
-                                    list_data.push(response);
+                                    data.push(response);
                                 }   
                             });
                         }
                         else {
                             response.date = date;
                             response.avg_lists = (response.lists_count / response.email_count).toFixed(0);
-                            list_data.push(response);
+                            data.push(response);
                         }   
                     });
                 });
@@ -85,13 +85,13 @@ function(err, response) {
                         return 0;
                       }
                 
-                    list_data.sort(compare);
+                    data.sort(compare);
                       
                     const Json2csvParser = require("json2csv").Parser;
                     const fields = ["date", "email_count", "engaged_count", "active_count", "passive_count", "disengaged_count", "dormant_count", "new_count", "optout_count", "hardbounce_count", "spam_count", "avg_lists"];
                     const file_name = `${today} ${list.name} list stats.csv`;
                     const json2csvParser = new Json2csvParser({ fields });
-                    const csv = json2csvParser.parse(list_data);
+                    const csv = json2csvParser.parse(data);
                         generator(top_folder, sub_folder, file_name, csv);
                 }, 5000);
             }

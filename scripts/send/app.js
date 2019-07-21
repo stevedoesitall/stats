@@ -10,7 +10,7 @@ const sailthru = require("sailthru-client").createSailthruClient(api_key, api_se
 
 const label = "active";
 const stat = "send";
-const active_templates = [];
+const data = [];
 
 const date_path = path.join(dir, "../modules/dates.js");
 const generator_path = path.join(dir, "../modules/folder_gen.js");
@@ -19,7 +19,7 @@ const today = require(date_path).today;
 const start_date = require(date_path).start_date;
 const end_date = require(date_path).end_date;
 
-const reports_folder = path.join(dir, "../../../../Reports/Send/");
+const reports_folder = path.join(dir, `../../../../Reports/${stat.toUpperCase()}/`);
 const folder_month = require(date_path).folder_month;
 const folder_year = require(date_path).folder_year;
 
@@ -121,7 +121,7 @@ function(err, response) {
                             response.spam_rate = ((response.spam / response.delivered) * 100).toFixed(2);
                         }
 
-                        active_templates.push(response);
+                        data.push(response);
                     }
                 });
             }
@@ -135,6 +135,6 @@ setTimeout(() => {
     const file_name = `${today} send stats.csv`;
 
     const json2csvParser = new Json2csvParser({ fields });
-    const csv = json2csvParser.parse(active_templates);
+    const csv = json2csvParser.parse(data);
         generator(top_folder, sub_folder, file_name, csv);
 }, 5000);

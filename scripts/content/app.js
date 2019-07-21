@@ -1,5 +1,6 @@
 const path = require("path");
 const dir = __dirname;
+const stat = "content";
 
 const creds = path.join(dir, "../creds.json");
 
@@ -8,16 +9,13 @@ const api_secret = require(creds).api_secret;
 const sailthru = require("sailthru-client").createSailthruClient(api_key, api_secret);
 
 const content_obj = {};
-content_obj.items = 1000;
-
-const api_key = req.body.creds.api_key;
-const api_secret = req.body.creds.api_secret;
-const sailthru = require("sailthru-client").createSailthruClient(api_key, api_secret);
+content_obj.items = 20000;
 
 const date_path = path.join(dir, "../modules/dates.js");
+const today = require(date_path).today;
 const generator_path = path.join(dir, "../modules/folder_gen.js");
 
-const reports_folder = path.join(dir, "../../../../Reports/Send/");
+const reports_folder = path.join(dir, `../../../../Reports/${stat.toUpperCase()}/`);
 const folder_month = require(date_path).folder_month;
 const folder_year = require(date_path).folder_year;
 
@@ -28,6 +26,7 @@ const generator = require(generator_path).generator;
 
 const data = [];
 const all_vars = [];
+
 sailthru.apiGet("content", content_obj, 
     function(err, response) {
         if (err) {
@@ -169,7 +168,19 @@ sailthru.apiGet("content", content_obj,
                 }
                 data.push(content_data);
             });
-            res.send(JSON.stringify(data));
         }
     });
 });
+
+setTimeout(() => {
+    
+    const Json2csvParser = require("json2csv").Parser;
+    let fields = ["title", "url", "date", "description", "tags", "views", "expire_date", "location", "author", "price", "sku", "inventory", "site_name", "image_full", "image_thumb"];
+    fields = fields.concat(all_vars);
+
+    const file_name = `${today} content stats.csv`;
+
+    const json2csvParser = new Json2csvParser({ fields });
+    const csv = json2csvParser.parse(data);
+        generator(top_folder, sub_folder, file_name, csv);
+}, 5000);
